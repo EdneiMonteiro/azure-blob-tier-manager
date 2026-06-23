@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import queue
+import sys
 import threading
 import traceback
 from typing import Optional
@@ -515,7 +516,19 @@ def main() -> None:
     parser.add_argument("--tenant", help="Tenant ID (default: sessão atual do az).")
     args = parser.parse_args()
 
-    app = StorageTierGUI(tenant_id=args.tenant)
+    try:
+        app = StorageTierGUI(tenant_id=args.tenant)
+    except tk.TclError as exc:
+        # Sem display gráfico (ex.: Azure Cloud Shell, SSH sem X11, servidor headless).
+        print(
+            "Não foi possível abrir a janela gráfica (sem display disponível).\n"
+            f"Detalhe: {exc}\n\n"
+            "Em ambientes sem interface gráfica (Azure Cloud Shell, SSH, headless),\n"
+            "use a versão de linha de comando:\n"
+            "    python storage_tier_manager.py --show\n",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
     app.mainloop()
 
 

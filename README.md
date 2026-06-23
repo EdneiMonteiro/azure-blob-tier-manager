@@ -94,6 +94,32 @@ az account show -o table
 Os scripts reutilizam essa sessão automaticamente (via `AzureCliCredential`).
 Você também pode forçar um tenant com a flag `--tenant <id>` em ambos os scripts.
 
+### 3.1. Rodando no Azure Cloud Shell (terminal, sem login)
+
+No [Azure Cloud Shell](https://shell.azure.com) você **já está autenticado** — não
+precisa de `az login`. Porém o Cloud Shell é **só terminal, sem interface gráfica**,
+então use apenas a **CLI** (`storage_tier_manager.py`); a janela
+(`gui.bat` / `storage_tier_gui.py`) **não funciona** lá (sem display).
+
+```bash
+# 1) Obtenha o código (repo privado): clone com gh/git ou faça upload do .py
+gh repo clone EdneiMonteiro/azure-blob-tier-manager
+cd azure-blob-tier-manager
+
+# 2) Instale as dependências no seu $HOME (persiste no clouddrive)
+pip install --user -r requirements.txt
+
+# 3) Rode — já usa a sessão autenticada do Cloud Shell
+python storage_tier_manager.py --show
+```
+
+Notas:
+
+- O Cloud Shell já traz **Python 3** e o **`az` autenticado**; o script reaproveita
+  essa sessão via `AzureCliCredential` (sem `az login`).
+- Só `$HOME` / `clouddrive` **persiste** entre sessões; o resto é efêmero.
+- Se você tentar abrir a **GUI** sem display, o script detecta e sugere a CLI.
+
 ---
 
 ## 4. Usando a janela gráfica (recomendado)
