@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "Se usar este material, por favor cite."
+title: "Azure Blob Tier Manager — GUI e CLI para Access Tier de Storage Accounts e Blobs do Azure"
+type: software
+authors:
+  - given-names: Ednei
+    family-names: Monteiro
+    orcid: "https://orcid.org/0009-0006-0765-4201"
+url: "https://github.com/EdneiMonteiro/azure-blob-tier-manager"
+keywords:
+  - azure
+  - storage
+  - blob
+  - access-tier
+  - python
+  - tkinter

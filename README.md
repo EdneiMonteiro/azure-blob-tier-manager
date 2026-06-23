@@ -1,9 +1,21 @@
-# Azure Storage — Gerenciador de Access Tier
+# 🗃️ Azure Blob Tier Manager
 
-Ferramentas para **visualizar** (e, com permissão, **alterar**) o *Access Tier* de
-Storage Accounts do Azure e dos blobs dentro delas. Mostram o tier atual, o
-**tamanho usado** e o **número de blobs** por conta, e indicam para quais tiers
-cada conta pode mudar (Cool / Cold / Archive).
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0006--0765--4201-A6CE39?logo=orcid&logoColor=white)](https://orcid.org/0009-0006-0765-4201)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Azure](https://img.shields.io/badge/Cloud-Azure-0078D4?logo=microsoftazure&logoColor=white)](#)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](#)
+[![GUI](https://img.shields.io/badge/GUI-tkinter-FFD43B?logo=python&logoColor=black)](#)
+[![Last commit](https://img.shields.io/github/last-commit/EdneiMonteiro/azure-blob-tier-manager)](https://github.com/EdneiMonteiro/azure-blob-tier-manager/commits)
+
+Ferramentas (**GUI** + **CLI**) para **visualizar** (e, com permissão, **alterar**) o
+*Access Tier* de Storage Accounts do Azure e dos blobs dentro delas. Mostram o tier
+atual, o **tamanho usado** e o **número de blobs** por conta, e indicam para quais
+tiers cada conta pode mudar (Cool / Cold / Archive).
+
+> ⚠️ Este repositório é uma **demo / utilitário** fornecido "no estado em que se
+> encontra". Antes de usar em produção, revise: segurança, permissões, custos e
+> impacto. Veja [DISCLAIMER.md](./DISCLAIMER.md) e [SUPPORT.md](./SUPPORT.md).
+> **Não afiliado nem endossado pela Microsoft.**
 
 Há duas formas de uso:
 
@@ -228,5 +240,36 @@ Mudar de tier pode gerar **custos de retirada/exclusão antecipada**. Avalie ant
 storage_tier_gui.py       # Janela gráfica (tkinter) — visual + menu de contexto
 storage_tier_manager.py   # Linha de comando — modo --show e modo de alteração
 requirements.txt          # Dependências (pip install -r requirements.txt)
+Abrir Storage Tier.bat    # Launcher da janela (1 clique)
 README.md                 # Este arquivo
+CITATION.cff              # Como citar este projeto
+DISCLAIMER.md             # Aviso legal
+SUPPORT.md                # Política de suporte
+LICENSE                   # Licença MIT
 ```
+
+---
+
+## 10. Citação
+
+Se este material for útil, por favor cite (há um botão **"Cite this repository"**
+na página do GitHub, gerado a partir do [`CITATION.cff`](./CITATION.cff)):
+
+> Monteiro, E. *Azure Blob Tier Manager — GUI e CLI para Access Tier de Storage
+> Accounts e Blobs do Azure.* https://github.com/EdneiMonteiro/azure-blob-tier-manager
+
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0006--0765--4201-A6CE39?logo=orcid&logoColor=white)](https://orcid.org/0009-0006-0765-4201)
+
+---
+
+## 11. Suporte e Aviso Legal
+
+- Sem SLA nem suporte oficial. Veja [SUPPORT.md](./SUPPORT.md).
+- Uso sujeito ao [DISCLAIMER.md](./DISCLAIMER.md).
+- **Não afiliado nem endossado pela Microsoft.** Marcas usadas apenas para descrição.
+
+---
+
+## 12. Licença
+
+Distribuído sob a licença **MIT**. Veja [LICENSE](./LICENSE).
