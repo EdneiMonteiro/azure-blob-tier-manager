@@ -1,8 +1,19 @@
 # Dependências do storage_tier_manager.py (console) e storage_tier_gui.py (janela)
-# Instale com: pip install -r requirements.txt
-# (tkinter, usado pela GUI, já vem na biblioteca padrão do Python no Windows)
-azure-identity>=1.23.0
-azure-mgmt-subscription>=3.1.1
-azure-mgmt-storage>=25.0.0
-azure-mgmt-monitor>=7.0.0
-azure-storage-blob>=12.30.0
+# Versões fixadas (pin) nas testadas, para reprodutibilidade e para evitar
+# conflito com pacotes pré-instalados (ex.: Azure Cloud Shell).
+#
+# Instalar:
+#   pip install -r requirements.txt
+# No Azure Cloud Shell (não mexe no Python do sistema):
+#   pip install --user -r requirements.txt
+#
+# (tkinter, usado pela GUI, já vem na biblioteca padrão do Python no Windows;
+#  no Cloud Shell não há GUI — use a CLI: python storage_tier_manager.py --show)
+
+azure-identity==1.23.0
+azure-mgmt-subscription==3.1.1
+azure-mgmt-storage==25.0.0
+azure-mgmt-monitor==7.0.0
+azure-storage-blob==12.30.0
+# Dependência transitiva compartilhada — fixada para estabilidade no Cloud Shell:
+azure-core==1.41.0
