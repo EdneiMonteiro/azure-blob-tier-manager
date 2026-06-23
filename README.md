@@ -240,7 +240,7 @@ Mudar de tier pode gerar **custos de retirada/exclusão antecipada**. Avalie ant
 storage_tier_gui.py       # Janela gráfica (tkinter) — visual + menu de contexto
 storage_tier_manager.py   # Linha de comando — modo --show e modo de alteração
 requirements.txt          # Dependências (pip install -r requirements.txt)
-Abrir Storage Tier.bat    # Launcher da janela (1 clique)
+gui.bat                   # Launcher da janela (1 clique)
 README.md                 # Este arquivo
 CITATION.cff              # Como citar este projeto
 DISCLAIMER.md             # Aviso legal
