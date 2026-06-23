@@ -129,6 +129,38 @@ def human_count(num: Optional[float]) -> str:
     return "n/d" if num is None else f"{int(round(num)):,}".replace(",", ".")
 
 
+def friendly_azure_error(exc: Exception) -> str:
+    """Formata um erro do Azure (HttpResponseError/Auth) de forma legível, sem traceback."""
+    code = None
+    try:
+        code = getattr(getattr(exc, "error", None), "code", None)
+    except Exception:
+        code = None
+    first = (str(exc).splitlines() or [exc.__class__.__name__])[0]
+
+    lines = ["", hr("="), "ERRO DE ACESSO AO AZURE", hr("=")]
+    if code:
+        lines.append(f"  Código : {code}")
+    lines.append(f"  Detalhe: {first}")
+    if (code == "AuthorizationFailed") or ("Authorization" in first) or ("not authorized" in first):
+        lines += [
+            "",
+            "  Você provavelmente não tem a role necessária neste escopo:",
+            "   • Para VISUALIZAR: peça 'Reader' na subscription/conta.",
+            "   • Para ALTERAR tier: 'Contributor' e/ou 'Storage Blob Data Contributor'.",
+            "   • Confirme tenant/subscription: az account show -o table",
+            "   • Se usa PIM/JIT, verifique se a elevação ainda está ativa.",
+        ]
+    elif code in ("InvalidAuthenticationTokenTenant", "InvalidAuthenticationToken"):
+        lines += [
+            "",
+            "  Token de outro tenant. Faça login no tenant correto:",
+            "   • az login --tenant <id-do-tenant>",
+        ]
+    lines.append(hr("="))
+    return "\n".join(lines)
+
+
 # ===========================================================================
 # Progresso com tabela de status (path atual | processados/total | ETA)
 # ===========================================================================
@@ -878,4 +910,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (ClientAuthenticationError, HttpResponseError) as exc:
+        print(friendly_azure_error(exc), file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\nCancelado.", file=sys.stderr)
+        sys.exit(130)
