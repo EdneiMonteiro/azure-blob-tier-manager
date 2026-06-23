@@ -1,0 +1,8 @@
+# Dependências do storage_tier_manager.py (console) e storage_tier_gui.py (janela)
+# Instale com: pip install -r requirements.txt
+# (tkinter, usado pela GUI, já vem na biblioteca padrão do Python no Windows)
+azure-identity>=1.23.0
+azure-mgmt-subscription>=3.1.1
+azure-mgmt-storage>=25.0.0
+azure-mgmt-monitor>=7.0.0
+azure-storage-blob>=12.30.0

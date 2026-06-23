@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Variáveis de ambiente / segredos
+.env
+*.secret
+
+# Artefatos temporários
+*.log
+_launch.txt
+_t.ps1
+
+# Editores / SO
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
