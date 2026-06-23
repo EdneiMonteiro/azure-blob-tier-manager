@@ -251,10 +251,13 @@ Mudar de tier pode gerar **custos de retirada/exclusão antecipada**. Avalie ant
 
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
-| `AuthorizationFailed` ao mudar tier | Você só tem **Reader** | Esperado para visualização. Para alterar, peça *Contributor* / *Storage Blob Data Contributor*. |
+| `AuthorizationFailed` | Você só tem **Reader** (ou nenhum acesso) no escopo | Para visualizar, peça *Reader*; para alterar, *Contributor* / *Storage Blob Data Contributor*. A CLI mostra uma mensagem clara com as dicas (sem traceback). |
+| Funcionava e parou com `AuthorizationFailed` | Elevação **PIM/JIT expirou** durante a sessão | Reative a elevação (PIM) e/ou rode `az login` de novo. Confirme com `az account show -o table`. |
+| `n` subscriptions de repente viram poucas/nenhuma | Acesso revogado/expirado (PIM/JIT) ou tenant errado | Reative o acesso e confira `az account list -o table`. |
 | `Tamanho`/`Blobs` aparecem como `n/d` | Métrica sem ponto recente (conta vazia ou só com page blobs) | Normal. As métricas de capacidade são snapshots ~diários. |
 | Nenhuma subscription listada | `az login` em outro tenant | Rode `az login --tenant <id>` correto. |
 | `ModuleNotFoundError: tkinter` | Python sem tcl/tk | Reinstale o Python marcando *tcl/tk and IDLE*. |
+| Janela não abre / “sem display” | Ambiente headless (Cloud Shell, SSH) | Use a CLI: `python storage_tier_manager.py --show`. Veja a seção 3.1. |
 | Janela não abre com `pythonw` | Erro silencioso (sem console) | Rode com `python storage_tier_gui.py` para ver a mensagem de erro. |
 | Acentos estranhos no terminal | Console em cp1252 | Apenas cosmético; os arquivos e a janela usam UTF-8. |
 
