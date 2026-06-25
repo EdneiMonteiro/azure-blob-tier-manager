@@ -34,6 +34,7 @@ Flags úteis:
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import threading
 import time
@@ -66,6 +67,8 @@ except ImportError as exc:  # pragma: no cover
     )
     sys.exit(1)
 
+
+logging.getLogger("azure.mgmt.storage._utils.model_base").setLevel(logging.ERROR)
 
 # Tiers válidos no nível da CONTA (default access tier).
 ACCOUNT_TIERS = ["Hot", "Cool", "Cold"]
@@ -157,8 +160,47 @@ def friendly_azure_error(exc: Exception) -> str:
             "  Token de outro tenant. Faça login no tenant correto:",
             "   • az login --tenant <id-do-tenant>",
         ]
+    elif is_too_many_requests(exc):
+        lines += [
+            "",
+            "  O Azure retornou throttling (429/Too Many Requests).",
+            "  Tente novamente em alguns minutos ou reduza operações simultâneas.",
+        ]
     lines.append(hr("="))
     return "\n".join(lines)
+
+
+def is_too_many_requests(exc: Exception) -> bool:
+    status_code = getattr(exc, "status_code", None)
+    return str(status_code) == "429" or "Too Many Requests" in str(exc)
+
+
+def retry_after_seconds(exc: Exception, fallback: float) -> float:
+    response = getattr(exc, "response", None)
+    headers = getattr(response, "headers", {}) or {}
+    retry_after = headers.get("Retry-After") or headers.get("retry-after")
+    try:
+        return max(float(retry_after), 0) if retry_after else fallback
+    except (TypeError, ValueError):
+        return fallback
+
+
+def run_azure_with_retry(description: str, operation, retries: int = 5):
+    """Executa uma chamada ARM com retry simples para throttling 429."""
+    for attempt in range(retries + 1):
+        try:
+            return operation()
+        except HttpResponseError as exc:
+            if not is_too_many_requests(exc) or attempt >= retries:
+                raise
+            fallback = min(5 * (2 ** attempt), 60)
+            delay = retry_after_seconds(exc, fallback)
+            print(
+                f"\n[Azure] {description}: Too Many Requests. "
+                f"Aguardando {delay:0.0f}s antes de tentar novamente "
+                f"({attempt + 1}/{retries})..."
+            )
+            time.sleep(delay)
 
 
 # ===========================================================================
@@ -771,10 +813,13 @@ def update_account_tier(storage_client, account: Account, target: str, dry_run: 
     if dry_run:
         print(f"\n[conta] (dry-run) mudaria default tier {account.access_tier} -> {target}")
         return True
-    storage_client.storage_accounts.update(
-        account.resource_group,
-        account.name,
-        StorageAccountUpdateParameters(access_tier=target),
+    run_azure_with_retry(
+        f"alterar tier da conta '{account.name}'",
+        lambda: storage_client.storage_accounts.update(
+            account.resource_group,
+            account.name,
+            StorageAccountUpdateParameters(access_tier=target),
+        ),
     )
     print(f"\n[conta] default tier alterado: {account.access_tier} -> {target}")
     return True

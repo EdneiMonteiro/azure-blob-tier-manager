@@ -1,4 +1,5 @@
-# Dependências do storage_tier_manager.py (console) e storage_tier_gui.py (janela)
+# Dependências do storage_tier_manager.py (CLI), storage_tier_tui.py (ASCII/TUI)
+# e storage_tier_gui.py (janela)
 # Versões fixadas (pin) nas testadas, para reprodutibilidade e para evitar
 # conflito com pacotes pré-instalados (ex.: Azure Cloud Shell).
 #
@@ -8,7 +9,7 @@
 #   pip install --user -r requirements.txt
 #
 # (tkinter, usado pela GUI, já vem na biblioteca padrão do Python no Windows;
-#  no Cloud Shell não há GUI — use a CLI: python storage_tier_manager.py --show)
+#  no Cloud Shell não há GUI — use a TUI: python storage_tier_tui.py)
 
 azure-identity==1.23.0
 azure-mgmt-subscription==3.1.1

@@ -17,11 +17,12 @@ tiers cada conta pode mudar (Cool / Cold / Archive).
 > impacto. Veja [DISCLAIMER.md](./DISCLAIMER.md) e [SUPPORT.md](./SUPPORT.md).
 > **Não afiliado nem endossado pela Microsoft.**
 
-Há duas formas de uso:
+Há três formas de uso:
 
 | Script | Tipo | Para quê |
 |---|---|---|
 | `storage_tier_gui.py` | **Janela gráfica** (tkinter) | Navegar visualmente: dropdown de subscription, tabela de contas, menu de contexto para mudar o tier. |
+| `storage_tier_tui.py` | **Interface ASCII/TUI** | Uso interativo no Azure Cloud Shell/SSH/headless, com telas estilo Clipper/Pascal em texto. |
 | `storage_tier_manager.py` | **Linha de comando** | Mesmo resultado no terminal, com modo `--show` (somente leitura) e modo de alteração com confirmação. |
 
 > **Somente leitura por padrão.** Visualizar tamanho/blobs usa apenas APIs de
@@ -34,9 +35,10 @@ Há duas formas de uso:
 
 ## 1. Pré-requisitos
 
-- **Windows** com **Python 3.9+** (testado em 3.13).
+- **Python 3.9+** (testado em 3.13 no Windows; compatível com Azure Cloud Shell
+  para CLI/TUI).
   - O módulo `tkinter` (usado pela janela) já vem na instalação padrão do
-    Python no Windows — não precisa instalar nada além do `requirements.txt`.
+    Python no Windows — só é necessário para a GUI.
 - **Azure CLI** (`az`) instalada e com login feito no tenant desejado.
 - Pelo menos a role **Reader** nas subscriptions/contas que você quer ver.
 
@@ -98,7 +100,8 @@ Você também pode forçar um tenant com a flag `--tenant <id>` em ambos os scri
 
 No [Azure Cloud Shell](https://shell.azure.com) você **já está autenticado** — não
 precisa de `az login`. Porém o Cloud Shell é **só terminal, sem interface gráfica**,
-então use apenas a **CLI** (`storage_tier_manager.py`); a janela
+então use a **TUI ASCII** (`storage_tier_tui.py`) ou a **CLI**
+(`storage_tier_manager.py`); a janela
 (`gui.bat` / `storage_tier_gui.py`) **não funciona** lá (sem display).
 
 ```bash
@@ -109,7 +112,10 @@ cd azure-blob-tier-manager
 # 2) Instale as dependências no seu $HOME (persiste no clouddrive)
 pip install --user -r requirements.txt
 
-# 3) Rode — já usa a sessão autenticada do Cloud Shell
+# 3) Rode a interface ASCII — já usa a sessão autenticada do Cloud Shell
+python storage_tier_tui.py
+
+# Alternativa simples em linha de comando
 python storage_tier_manager.py --show
 ```
 
@@ -118,6 +124,7 @@ Notas:
 - O Cloud Shell já traz **Python 3** e o **`az` autenticado**; o script reaproveita
   essa sessão via `AzureCliCredential` (sem `az login`).
 - Só `$HOME` / `clouddrive` **persiste** entre sessões; o resto é efêmero.
+- A TUI usa apenas `input`/`print` e caixas ASCII; não precisa de `curses`.
 - Se você tentar abrir a **GUI** sem display, o script detecta e sugere a CLI.
 
 ---
@@ -152,7 +159,18 @@ Fluxo na janela:
 
 ---
 
-## 5. Usando a linha de comando
+## 5. Usando no terminal
+
+### 5.0. Interface ASCII/TUI para Cloud Shell
+
+```bash
+python storage_tier_tui.py
+```
+
+- Mostra telas ASCII com lista paginada de subscriptions e storage accounts.
+- Aceita filtro digitando texto diretamente; `n`/`p` navegam entre páginas.
+- Na tela de detalhe, digite o número do destino para **simular**; para aplicar
+  de verdade, use `aN` (ex.: `a1`) e confirme digitando `ALTERAR`.
 
 ### 5.1. Somente leitura (interativo)
 
@@ -240,6 +258,8 @@ Mudar de tier pode gerar **custos de retirada/exclusão antecipada**. Avalie ant
   (`UsedCapacity`, `BlobCapacity`, `BlobCount`, `ContainerCount`) — coletadas em
   paralelo, exigem só **Reader**. Não enumeram blobs (não usam o plano de dados).
 - **Alteração do tier da conta:** `storage_accounts.update` (plano de gestão).
+  Se o Azure retornar throttling (`Too Many Requests`), o script aguarda e tenta
+  novamente com backoff antes de falhar.
 - **Alteração do tier dos blobs:** `set_standard_blob_tier` via
   `azure-storage-blob` (plano de dados); tenta chave de conta e cai para Azure AD.
 - **GUI:** `tkinter`; chamadas de rede rodam em threads e entregam o resultado à
@@ -267,6 +287,7 @@ Mudar de tier pode gerar **custos de retirada/exclusão antecipada**. Avalie ant
 
 ```
 storage_tier_gui.py       # Janela gráfica (tkinter) — visual + menu de contexto
+storage_tier_tui.py       # Interface ASCII/TUI para Cloud Shell/SSH/headless
 storage_tier_manager.py   # Linha de comando — modo --show e modo de alteração
 requirements.txt          # Dependências (pip install -r requirements.txt)
 gui.bat                   # Launcher da janela (1 clique)

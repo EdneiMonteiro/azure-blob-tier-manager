@@ -49,10 +49,10 @@ from storage_tier_manager import (
     possible_targets,
     subscription_name_matches_filter,
     TIER_NOTAS,
+    update_account_tier,
 )
 from azure.mgmt.subscription import SubscriptionClient
 from azure.mgmt.storage import StorageManagementClient
-from azure.mgmt.storage.models import StorageAccountUpdateParameters
 from azure.mgmt.monitor import MonitorManagementClient
 
 
@@ -498,10 +498,7 @@ class StorageTierGUI(tk.Tk):
 
         # 1) Tier padrão da conta (plano de gestão) — Archive não vale para a conta.
         if target != "Archive" and account.access_tier and account.access_tier != target:
-            storage.storage_accounts.update(
-                account.resource_group, account.name,
-                StorageAccountUpdateParameters(access_tier=target),
-            )
+            update_account_tier(storage, account, target, dry_run=False)
             passos.append(f"Tier padrão da conta alterado para {target}.")
 
         # 2) Tier dos blobs (plano de dados) — exige role de dados.
