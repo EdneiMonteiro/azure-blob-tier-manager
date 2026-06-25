@@ -47,6 +47,7 @@ from storage_tier_manager import (
     list_accounts,
     make_blob_service,
     possible_targets,
+    subscription_name_matches_filter,
     TIER_NOTAS,
 )
 from azure.mgmt.subscription import SubscriptionClient
@@ -219,8 +220,11 @@ class StorageTierGUI(tk.Tk):
         self._run_async(work, done)
 
     def _apply_sub_filter(self) -> None:
-        termo = self.filter_var.get().strip().lower()
-        visiveis = [s for s in self.subs if not termo or termo in s[0].lower()]
+        termo = self.filter_var.get()
+        visiveis = [
+            s for s in self.subs
+            if subscription_name_matches_filter(s[0], termo)
+        ]
         valores = [f"{disp}   [{sid}]" for disp, sid, _ in visiveis]
         self._visiveis = visiveis
         self.sub_combo["values"] = valores

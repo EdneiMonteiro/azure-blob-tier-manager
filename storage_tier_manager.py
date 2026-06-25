@@ -337,6 +337,18 @@ def build_credential(tenant_id: Optional[str]):
 # ===========================================================================
 # Seleção de subscription
 # ===========================================================================
+def subscription_name_matches_filter(
+    display_name: Optional[str],
+    filter_text: str,
+) -> bool:
+    """Filtra subscription por nome, aceitando múltiplos termos."""
+    terms = filter_text.strip().casefold().split()
+    if not terms:
+        return True
+    haystack = (display_name or "").casefold()
+    return all(term in haystack for term in terms)
+
+
 def pick_subscription(credential, preset: Optional[str]) -> str:
     if preset:
         return preset
@@ -361,7 +373,7 @@ def pick_subscription(credential, preset: Optional[str]) -> str:
     while True:
         visiveis = [
             s for s in subs
-            if not filtro or filtro.lower() in (s.display_name or "").lower()
+            if subscription_name_matches_filter(s.display_name, filtro)
         ]
         print(f"\nSubscriptions ({len(visiveis)} de {len(subs)})"
               + (f" — filtro: '{filtro}'" if filtro else "") + ":")
@@ -371,12 +383,12 @@ def pick_subscription(credential, preset: Optional[str]) -> str:
         for i, s in enumerate(visiveis[:cap], 1):
             print(f"  {i:>3}) {s.display_name}  [{s.subscription_id}]  ({s.state})")
         if len(visiveis) > cap:
-            print(f"  ... e mais {len(visiveis) - cap}. Use '/texto' para filtrar.")
+            print(f"  ... e mais {len(visiveis) - cap}. Digite texto para filtrar.")
         print(hr())
-        print("  Digite o NÚMERO para escolher, '/texto' para filtrar, "
-              "ou Enter para limpar o filtro.")
+        print("  Digite o NÚMERO para escolher, texto para filtrar por nome, "
+              "'/texto' também funciona, ou Enter para limpar o filtro.")
 
-        choice = ask("Subscription: ")
+        choice = ask("Subscription/filtro: ")
         if choice.startswith("/"):
             filtro = choice[1:].strip()
             continue
@@ -387,7 +399,7 @@ def pick_subscription(credential, preset: Optional[str]) -> str:
             chosen = visiveis[int(choice) - 1]
             print(f"-> {chosen.display_name} ({chosen.subscription_id})")
             return chosen.subscription_id
-        print("Opção inválida.")
+        filtro = choice
 
 
 # ===========================================================================

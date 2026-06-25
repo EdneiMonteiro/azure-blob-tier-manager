@@ -160,8 +160,8 @@ Fluxo na janela:
 python storage_tier_manager.py --show
 ```
 
-- Lista as subscriptions (com filtro: digite `/texto` para filtrar, `Enter`
-  limpa o filtro).
+- Lista as subscriptions (com filtro: digite texto para filtrar por nome;
+  `/texto` também funciona; `Enter` limpa o filtro).
 - Mostra a tabela de storages com **tamanho** e **nº de blobs**.
 - Digite o número de uma conta para ver o tier atual e as opções de mudança.
   `a` mostra todas; `q` sai.
