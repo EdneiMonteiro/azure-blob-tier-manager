@@ -325,3 +325,8 @@ na página do GitHub, gerado a partir do [`CITATION.cff`](./CITATION.cff)):
 ## 12. Licença
 
 Distribuído sob a licença **MIT**. Veja [LICENSE](./LICENSE).
+
+## 🤝 Contributing
+
+Issue and pull request creation is restricted to collaborators. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for details.
