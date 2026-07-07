@@ -285,12 +285,10 @@ def apply_change(credential, account: Account, target: str, workers: int) -> Non
         return
 
     storage = StorageManagementClient(credential, account.subscription_id)
-    update_account_tier(storage, account, target, dry_run=False)
-
     try:
         svc = make_blob_service(account, credential, storage)
     except Exception:
-        box("Erro", ["Tier da conta tratado, mas nao foi possivel acessar os blobs."])
+        box("Erro", ["Nada foi alterado: nao foi possivel acessar os blobs."])
         pause()
         return
 
@@ -304,10 +302,11 @@ def apply_change(credential, account: Account, target: str, workers: int) -> Non
         ],
     )
     if items and not confirm(f"Alterar {len(items)} blob(s) agora"):
-        box("Parcial", ["Tier da conta tratado; blobs nao foram modificados."])
+        box("Cancelado", ["Nada foi alterado."])
         pause()
         return
 
+    update_account_tier(storage, account, target, dry_run=False)
     failures = apply_blob_tier(svc, items, target, workers=workers, dry_run=False)
     box(
         "Concluido",

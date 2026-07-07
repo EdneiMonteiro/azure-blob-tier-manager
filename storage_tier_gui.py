@@ -491,10 +491,12 @@ class StorageTierGUI(tk.Tk):
             )
             return (True, "Simulação", msg)
 
-        # Tentativa real. Para usuário só-leitura, falha já no 1º passo (sem
-        # tocar em nenhum blob), que é o comportamento esperado.
         storage = StorageManagementClient(self.credential, sub_id)
         passos = []
+
+        # Valida o plano de dados antes de alterar a conta, evitando mudança parcial.
+        svc = make_blob_service(account, self.credential, storage)
+        items, already, skipped = collect_blobs(svc, target)
 
         # 1) Tier padrão da conta (plano de gestão) — Archive não vale para a conta.
         if target != "Archive" and account.access_tier and account.access_tier != target:
@@ -502,8 +504,6 @@ class StorageTierGUI(tk.Tk):
             passos.append(f"Tier padrão da conta alterado para {target}.")
 
         # 2) Tier dos blobs (plano de dados) — exige role de dados.
-        svc = make_blob_service(account, self.credential, storage)
-        items, already, skipped = collect_blobs(svc, target)
         failures = apply_blob_tier(svc, items, target, workers=8, dry_run=False)
         passos.append(
             f"Blobs: {len(items) - len(failures)} alterados, {len(failures)} falha(s), "

@@ -924,14 +924,12 @@ def main() -> None:
             print("Cancelado pelo usuário.")
             sys.exit(0)
 
-    # 5) Conta
-    update_account_tier(storage_client, account, target, args.dry_run)
-
-    # 6) Blobs
+    # 5) Valida plano de dados antes de alterar a conta, evitando mudança parcial
+    # quando falta Storage Blob Data Contributor ou acesso por chave.
     try:
         svc = make_blob_service(account, credential, storage_client)
     except Exception:
-        print("Tier da conta tratado, mas não foi possível processar os blobs.")
+        print("Nenhuma alteração aplicada: não foi possível acessar/processar os blobs.")
         sys.exit(1)
 
     items, already, skipped = collect_blobs(svc, target)
@@ -942,14 +940,18 @@ def main() -> None:
 
     if items and not args.yes and not args.dry_run:
         if not confirm(f"Alterar {len(items)} blob(s) agora"):
-            print("Tier da conta alterado; blobs não foram modificados.")
+            print("Cancelado pelo usuário. Nada foi alterado.")
             sys.exit(0)
 
+    # 6) Conta
+    update_account_tier(storage_client, account, target, args.dry_run)
+
+    # 7) Blobs
     t0 = time.monotonic()
     failures = apply_blob_tier(svc, items, target, args.workers, args.dry_run)
     elapsed = time.monotonic() - t0
 
-    # 7) Relatório final
+    # 8) Relatório final
     print("\n" + hr("="))
     print("CONCLUÍDO")
     print(hr("="))

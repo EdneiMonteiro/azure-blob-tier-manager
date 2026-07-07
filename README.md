@@ -201,6 +201,8 @@ python storage_tier_manager.py --subscription <id> --account <nome-da-conta> --s
 
 > ⚠️ Isto **altera de verdade** o tier padrão da conta e o tier dos blobs block
 > existentes. Comece sempre com `--dry-run`.
+> Antes de alterar o tier padrão da conta, o script valida acesso ao plano de
+> dados dos blobs; se faltar permissão, ele para sem aplicar mudança parcial.
 
 ```powershell
 # Simular (não altera nada)
